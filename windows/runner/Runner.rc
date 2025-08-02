@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "turfr" "\0"
+            VALUE "CompanyName", "com.turfr.app" "\0"
+            VALUE "FileDescription", "turfr_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "turfr" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "turfr.exe" "\0"
-            VALUE "ProductName", "turfr" "\0"
+            VALUE "InternalName", "turfr_app" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.turfr.app. All rights reserved." "\0"
+            VALUE "OriginalFilename", "turfr_app.exe" "\0"
+            VALUE "ProductName", "turfr_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
