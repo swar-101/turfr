@@ -19,7 +19,6 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Shared button style
     final buttonShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     );
@@ -32,53 +31,49 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 80),
-                SvgPicture.asset('assets/images/turfr_logo.svg', height: 120),
-                const SizedBox(height: 32),
-
-                // Email
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: Colors.grey[900],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
+        child: Center(                              // ← wrap everything in Center
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,    // ← let Column size to its children
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/turfr_logo.svg',
+                    height: 120,
                   ),
-                  style: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 16),
-
-                // Password
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: Colors.grey[900],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                  const SizedBox(height: 32),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      filled: true,
+                      fillColor: Colors.grey[900],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  style: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 24),
-
-                // Sign In Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
+                  const SizedBox(height: 16),
+                  TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      filled: true,
+                      fillColor: Colors.grey[900],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
                     onPressed: () => print('Sign In tapped'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.greenAccent[700],
@@ -92,27 +87,20 @@ class LoginPage extends StatelessWidget {
                       style: commonTextStyle.copyWith(color: Colors.black),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                // Register link
-                TextButton(
-                  onPressed: () => print('Register tapped'),
-                  child: const Text(
-                    'Register Instead',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      decoration: TextDecoration.underline,
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => print('Register tapped'),
+                    child: const Text(
+                      'Register Instead',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 32),
-
-                // Continue with Google Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
+                  const SizedBox(height: 32),
+                  ElevatedButton(
                     onPressed: () => print('Google Sign-In tapped'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -138,9 +126,8 @@ class LoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-              ],
+                ],
+              ),
             ),
           ),
         ),
