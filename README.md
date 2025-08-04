@@ -2,9 +2,8 @@
 
 ## Login Page 
 
-Dumb Component
-    - needs Google Auth and Register using email feature
-
+Features: 
+1. Supports Google Sign In via Firestore Auth
 
 ## Kick Off
 
