@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:turfr_app/features/auth/presentation/home_page.dart';
 
 import '../providers.dart';
 
@@ -89,35 +90,39 @@ class LoginPage extends ConsumerWidget {
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: () async {
-                      final repo = ref.read(authRepositoryProvider);
-                      //   if (result != null) {
-                      //     print("✅ User: ${result.user?.displayName}");
-                      //   } else {
-                      //     print("⚠️ Google sign-in was cancelled.");
-                      //   }
-                      // }
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      scaffoldMessenger.showSnackBar(
-                        const SnackBar(
-                          content: Text('Signing in with Google...'),
-                        ),
-                      );
-                      final result = await repo.signInWithGoogle();
-                      scaffoldMessenger.hideCurrentSnackBar();
-                      if (result != null) {
+                      final repo = ref.read(authRepositoryProvider);
+
+                      try {
                         scaffoldMessenger.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Welcome, ${result.user?.displayName}!',
-                            ),
-                          ),
+                          const SnackBar(content: Text('Signing in with Google...')),
                         );
-                      } else {
+
+                        final result = await repo.signInWithGoogle();
+
+                        scaffoldMessenger.hideCurrentSnackBar();
+
+                        print("About to nav to home page... 🎉");
+
+                        if (result != null) {
+                          scaffoldMessenger.showSnackBar(
+                            SnackBar(content: Text('Welcome, ${result.user?.displayName}!')),
+                          );
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                          );
+                        } else {
+                          scaffoldMessenger.showSnackBar(
+                            const SnackBar(content: Text("Sign-in was cancelled 😕")),
+                          );
+                        }
+                      } catch (e, st) {
+                        scaffoldMessenger.hideCurrentSnackBar();
                         scaffoldMessenger.showSnackBar(
-                          const SnackBar(
-                            content: Text("Sign-in was cancelled 😕"),
-                          ),
+                          SnackBar(content: Text('Error during sign-in: $e')),
                         );
+                        print('Sign-in error: $e');
+                        print(st);
                       }
                     },
                     child: Row(
