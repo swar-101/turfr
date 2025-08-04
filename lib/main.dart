@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'features/auth/presentation/edit_profile_page.dart';
 import 'features/auth/presentation/home_page.dart';
 import 'features/auth/presentation/login_page.dart';
 import 'features/auth/providers.dart';
@@ -27,6 +28,9 @@ class MyApp extends ConsumerWidget {
             const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
       ),
+      routes : {
+        '/editProfile': (context) => const EditProfilePage(),
+      },
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:turfr_app/features/auth/providers.dart';
 
+import 'home_content.dart';
+
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -13,6 +15,12 @@ class HomePage extends ConsumerWidget {
         title: Text('Welcome, ${user?.displayName ?? "user"}'),
         actions: [
           IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/editProfile');
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
               await ref.read(authRepositoryProvider).signOut();
@@ -20,7 +28,7 @@ class HomePage extends ConsumerWidget {
           ),
         ],
       ),
-      body: const Center(child: Text("You're logged in! 🎉")),
+      body: const HomeContent(),
     );
   }
 }

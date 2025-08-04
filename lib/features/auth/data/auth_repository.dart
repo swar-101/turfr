@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'user_repository.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
+  final UserRepository _userRepository;
 
-  AuthRepository(this._auth, this._googleSignIn);
+  AuthRepository(this._auth, this._googleSignIn, this._userRepository);
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
@@ -19,7 +21,14 @@ class AuthRepository {
         idToken: googleAuth.idToken,
       );
 
-      return await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      // Create Firestore user doc if not exists
+      if (userCredential.user != null) {
+        await _userRepository.createUserIfNotExists(userCredential.user!);
+      }
+
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       print('Firebase Auth Error: ${e.code} - ${e.message}');
       rethrow;
