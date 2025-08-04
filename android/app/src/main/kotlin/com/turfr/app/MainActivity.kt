@@ -1,4 +1,4 @@
-package com.turfr.app.turfr_app
+package com.turfr.app
 
 import io.flutter.embedding.android.FlutterActivity
 
