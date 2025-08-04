@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:546620801858:android:ae4128140df0fb90ba3edb",
+        "mobilesdk_app_id": "1:546620801858:android:67061defd6b15d38ba3edb",
         "android_client_info": {
-          "package_name": "com.turfr.turfr_app"
+          "package_name": "com.turfr.app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "546620801858-qv5vgpgh7rt4a14ffrfab3915cc9ucju.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turfr.app",
+            "certificate_hash": "71917e4b83b12a3e8d34a0754452cf4380c738db"
+          }
+        },
         {
           "client_id": "546620801858-ni6g3u4h9k5oq6npeevdhmbeijjgoi86.apps.googleusercontent.com",
           "client_type": 3
