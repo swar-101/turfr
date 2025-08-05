@@ -1,22 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:turfr_app/features/auth/presentation/kickbits_card.dart';
-
+import '../data/user_repository.dart';
 import 'friendlist_preview.dart';
 import 'kickoff_matchlist.dart';
 
 class HomeContent extends StatelessWidget {
-  const HomeContent({super.key});
+  HomeContent({super.key});
+
+  final UserRepository userRepository = UserRepository();
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: const [
-        KickBitsCard(balance: 12),
-        SizedBox(height: 24),
-        FriendListPreview(),
-        KickOffMatchList(),
-      ],
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) {
+      return const Center(child: Text('User not logged in'));
+    }
+
+    return StreamBuilder<Map<String, dynamic>>(
+      stream: userRepository.watchUserProfile(uid),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final userData = snapshot.data ?? {};
+        final kickBits = userData['kickBits'] ?? 0;
+
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            KickBitsCard(balance: kickBits),
+            const SizedBox(height: 24),
+            const FriendListPreview(),
+            const KickOffMatchList(),
+          ],
+        );
+      },
     );
   }
 }
