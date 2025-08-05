@@ -10,28 +10,28 @@ class KickBitsCard extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.deepPurple[50],
+      color: Colors.grey[900],  // Dark background, almost black
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         child: Row(
           children: [
-            const Icon(Icons.sports_soccer, color: Colors.deepPurple, size: 40),
+            Icon(Icons.sports_soccer, color: Colors.purpleAccent.shade200, size: 40), // Neon purple vibe
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'KickBits',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: Colors.purpleAccent.shade200, // Same neon purple
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Balance: $balance',
-                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  style: const TextStyle(fontSize: 16, color: Colors.white70),
                 ),
               ],
             ),
