@@ -22,13 +22,26 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black87, // fallback for appbar
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: Colors.purpleAccent.shade400,
+          secondary: Colors.purpleAccent.shade200,
+        ),
+      ),
       home: authState.when(
         data: (user) => user == null ? const LoginPage() : const HomePage(),
         loading: () =>
-            const Scaffold(body: Center(child: CircularProgressIndicator())),
+        const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
       ),
-      routes : {
+      routes: {
         '/editProfile': (context) => const EditProfilePage(),
       },
     );
