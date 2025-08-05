@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class KickBitsCard extends StatelessWidget {
   final int balance;
@@ -10,18 +11,23 @@ class KickBitsCard extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.grey[900],  // Dark background, almost black
+      color: Colors.grey[900],
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         child: Row(
           children: [
-            Icon(Icons.sports_soccer, color: Colors.purpleAccent.shade200, size: 40), // Neon purple vibe
+            SvgPicture.asset(
+              'assets/images/kickbit.svg',
+
+              height: 30,
+              width: 30,
+            ),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'KickBits',
+                  'kickbits',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
