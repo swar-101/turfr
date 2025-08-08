@@ -61,33 +61,7 @@ class LoginPage extends ConsumerWidget {
                     style: const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => print('Sign In tapped'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.greenAccent[700],
-                      padding: commonPadding,
-                      shape: buttonShape,
-                      minimumSize: const Size.fromHeight(48),
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                    ),
-                    child: Text(
-                      'Sign In',
-                      style: commonTextStyle.copyWith(color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => print('Register tapped'),
-                    child: const Text(
-                      'Register Instead',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+
                   ElevatedButton(
                     onPressed: () async {
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -101,8 +75,6 @@ class LoginPage extends ConsumerWidget {
                         final result = await repo.signInWithGoogle();
 
                         scaffoldMessenger.hideCurrentSnackBar();
-
-                        print("About to nav to home page... 🎉");
 
                         if (result != null) {
                           scaffoldMessenger.showSnackBar(
@@ -125,6 +97,13 @@ class LoginPage extends ConsumerWidget {
                         print(st);
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      padding: commonPadding,
+                      shape: buttonShape,
+                      minimumSize: const Size.fromHeight(48),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -137,9 +116,7 @@ class LoginPage extends ConsumerWidget {
                         const SizedBox(width: 12),
                         Text(
                           'Continue with Google',
-                          style: commonTextStyle.copyWith(
-                            color: Colors.black87,
-                          ),
+                          style: commonTextStyle.copyWith(color: Colors.black),
                         ),
                       ],
                     ),
