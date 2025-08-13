@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:turfr_app/features/auth/providers.dart';
 import 'home_content.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -16,6 +15,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
   static final List<Widget> _pages = <Widget>[
@@ -35,25 +35,31 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   // Tab background colors for dark mode
   static final List<Color> tabColors = [
-    Colors.blue.shade900,   // Home
-    Colors.red.shade900,    // Squad
-    Colors.orange.shade900, // Kickoff
-    Colors.green.shade900,  // Stats
-    Colors.black,           // Me (default)
+    const Color(0xFF07125C), // Deep blue for Home
+    const Color(0xFF45080A), // Deep red for Squad
+    const Color(0xFF6B3510), // Deep orange for Kickoff
+    const Color(0xFF093015), // Deep green for Stats
+    Colors.black,            // Me (default)
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.black.withAlpha(160),
-        elevation: 0,
+        backgroundColor: Colors.black,
+        elevation: 3,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
         title: SvgPicture.asset(
           'assets/images/turfr_logo.svg',
           height: 36,
           colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
         ),
+        iconTheme: const IconThemeData(color: Colors.white, size: 28),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -61,11 +67,64 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await ref.read(authRepositoryProvider).signOut();
+            onPressed: () {
+              // TODO: Replace with your actual logout logic
+              // Example: ref.read(authProvider.notifier).logout();
+              Navigator.of(context).pushReplacementNamed('/login');
             },
           ),
         ],
+      ),
+      drawer: Drawer(
+        backgroundColor: Colors.black.withAlpha(160),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.horizontal(right: Radius.circular(32)),
+        ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/turfr_logo.svg',
+                    height: 48,
+                    colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'v.1.0.32',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.white, size: 28),
+              title: const Text('Settings', style: TextStyle(fontSize: 18, color: Colors.white)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            ),
+            ListTile(
+              leading: const Icon(Icons.star, color: Colors.white, size: 28),
+              title: const Text('Creator Options', style: TextStyle(fontSize: 18, color: Colors.white)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            ),
+          ],
+        ),
       ),
 
       // Stack: base green -> procedural grain -> subtle vignette -> content
@@ -118,26 +177,20 @@ class _HomePageState extends ConsumerState<HomePage> {
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           splashFactory: NoSplash.splashFactory,
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            backgroundColor: Colors.black,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.grey,
-          ),
+          // Remove BottomNavigationBarThemeData, not needed for NavigationBar
         ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
+        child: NavigationBar(
+          height: 60, // Reduced height for a less tall nav bar
           backgroundColor: Colors.black,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-          enableFeedback: false,
-          currentIndex: _currentIndex,
-          onTap: (int idx) => setState(() => _currentIndex = idx),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.groups_3), label: 'Squad'),
-            BottomNavigationBarItem(icon: Icon(Icons.local_fire_department), label: 'Kickoff'),
-            BottomNavigationBarItem(icon: Icon(Icons.monitor), label: 'Stats'),
-            BottomNavigationBarItem(icon: Icon(Icons.man), label: 'Me'),
+          indicatorColor: Theme.of(context).colorScheme.secondary,
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (int idx) => setState(() => _currentIndex = idx),
+          destinations: const [
+            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+            NavigationDestination(icon: Icon(Icons.groups_3), label: 'Squad'),
+            NavigationDestination(icon: Icon(Icons.local_fire_department), label: 'Kickoff'),
+            NavigationDestination(icon: Icon(Icons.monitor), label: 'Stats'),
+            NavigationDestination(icon: Icon(Icons.man), label: 'Me'),
           ],
         ),
       ),

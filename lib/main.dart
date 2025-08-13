@@ -32,17 +32,15 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.purpleAccent,
+          brightness: Brightness.dark,
+        ),
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black87, // fallback for appbar
           elevation: 0,
-          iconTheme: IconThemeData(color: Colors.white),
-          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        colorScheme: ColorScheme.dark(
-          primary: Colors.purpleAccent.shade400,
-          secondary: Colors.purpleAccent.shade200,
         ),
       ),
       home: authState.when(
