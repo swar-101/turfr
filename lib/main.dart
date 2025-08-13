@@ -1,14 +1,16 @@
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'features/auth/presentation/edit_profile_page.dart';
 import 'features/auth/presentation/home_page.dart';
 import 'features/auth/presentation/login_page.dart';
-import 'features/auth/providers.dart';
+import 'features/me_page.dart';
+import 'features/auth/providers/providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +53,8 @@ class MyApp extends ConsumerWidget {
       ),
       routes: {
         '/editProfile': (context) => const EditProfilePage(),
+        '/login': (context) => const LoginPage(),
+        '/me': (context) => const MePage(),
       },
     );
   }

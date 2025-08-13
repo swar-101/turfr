@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:turfr_app/features/auth/presentation/kickbits_card.dart';
 
 import '../data/user_repository.dart';
 
@@ -34,7 +33,6 @@ class HomeContent extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            KickBitsCard(balance: kickBits),
             const SizedBox(height: 24),
             // const FriendListPreview(),
             // const KickOffMatchList(),

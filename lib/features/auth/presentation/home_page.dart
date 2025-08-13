@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'home_content.dart';
+import '../../me_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -18,14 +19,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
 
-  static final List<Widget> _pages = <Widget>[
-    HomeContent(),
-    const _PlaceholderPage(title: 'Squad'),
-    const _PlaceholderPage(title: 'Kickoff'),
-    const _PlaceholderPage(title: 'Stats'),
-    const _PlaceholderPage(title: 'Me'),
-  ];
-
   // Grain settings — tweak to taste:
   // grainOpacity: 0.03 - 0.12 is subtle; raise for stronger effect.
   // grainDensity: 0.3 - 1.0 (0.0 none, 1.0 denser)
@@ -33,13 +26,21 @@ class _HomePageState extends ConsumerState<HomePage> {
   static const double grainDensity = 0.9;
   static const int grainSeed = 42; // change to re-seed pattern
 
-  // Tab background colors for dark mode
-  static final List<Color> tabColors = [
-    const Color(0xFF07125C), // Deep blue for Home
-    const Color(0xFF45080A), // Deep red for Squad
-    const Color(0xFF6B3510), // Deep orange for Kickoff
-    const Color(0xFF093015), // Deep green for Stats
-    Colors.black,            // Me (default)
+  // Dynamic indicator colors for navbar selection
+  static final List<Color> navIndicatorColors = [
+    Color(0xFF001F3F), // Home - Navy Blue
+    Color(0xFF7B1F1F), // Squad - Navy Red
+    Color(0xFFFF4500), // Kickoff - Fiery Orange
+    Color(0xFF4FF6A8), // Stats - Bright Green
+    Color(0xFFB57CF6), // Me - Lavender
+  ];
+
+  static final List<Widget> _pages = <Widget>[
+    Container(color: Colors.black, child: HomeContent()),
+    const _PlaceholderPage(title: 'Squad', backgroundColor: Colors.black),
+    const _PlaceholderPage(title: 'Kickoff', backgroundColor: Colors.black),
+    const _PlaceholderPage(title: 'Stats', backgroundColor: Colors.black),
+    const MePage(),
   ];
 
   @override
@@ -47,7 +48,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
+      appBar: _currentIndex == 4 ? null : AppBar(
         backgroundColor: Colors.black,
         elevation: 3,
         centerTitle: true,
@@ -75,7 +76,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      drawer: Drawer(
+      drawer: _currentIndex == 4 ? null : Drawer(
         backgroundColor: Colors.black.withAlpha(160),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(32)),
@@ -112,14 +113,14 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.settings, color: Colors.white, size: 28),
-              title: const Text('Settings', style: TextStyle(fontSize: 18, color: Colors.white)),
+              leading: const Icon(Icons.settings, color: Colors.white, size: 24),
+              title: const Text('Settings', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             ),
             ListTile(
-              leading: const Icon(Icons.star, color: Colors.white, size: 28),
-              title: const Text('Creator Options', style: TextStyle(fontSize: 18, color: Colors.white)),
+              leading: const Icon(Icons.info_outline, color: Colors.white, size: 24),
+              title: const Text('About', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             ),
@@ -130,8 +131,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       // Stack: base green -> procedural grain -> subtle vignette -> content
       body: Stack(
         children: [
-          // Dynamic background color based on selected tab
-          Container(color: tabColors[_currentIndex]),
+          // Remove tabColors background
 
           // Procedural grain painter: no seams, adjustable density & opacity
           Positioned.fill(
@@ -157,8 +157,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.04),
-                    Colors.black.withOpacity(0.10),
+                    Colors.black.withValues(alpha: 0.04),
+                    Colors.black.withValues(alpha: 0.10),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -177,20 +177,48 @@ class _HomePageState extends ConsumerState<HomePage> {
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           splashFactory: NoSplash.splashFactory,
-          // Remove BottomNavigationBarThemeData, not needed for NavigationBar
+          navigationBarTheme: NavigationBarThemeData(
+            labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>((states) {
+              return const TextStyle(
+                fontWeight: FontWeight.w300, // Thinner than w400
+                fontSize: 12,
+                color: Colors.white,
+              );
+            }),
+          ),
         ),
         child: NavigationBar(
-          height: 60, // Reduced height for a less tall nav bar
+          height: 60,
           backgroundColor: Colors.black,
-          indicatorColor: Theme.of(context).colorScheme.secondary,
+          indicatorColor: navIndicatorColors[_currentIndex],
           selectedIndex: _currentIndex,
           onDestinationSelected: (int idx) => setState(() => _currentIndex = idx),
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.groups_3), label: 'Squad'),
-            NavigationDestination(icon: Icon(Icons.local_fire_department), label: 'Kickoff'),
-            NavigationDestination(icon: Icon(Icons.monitor), label: 'Stats'),
-            NavigationDestination(icon: Icon(Icons.man), label: 'Me'),
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home, color: Colors.white),
+              selectedIcon: const Icon(Icons.home, color: Colors.black), // Black for visibility
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.groups_3, color: Colors.white),
+              selectedIcon: const Icon(Icons.groups_3, color: Colors.black), // Black for visibility
+              label: 'Squad',
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.local_fire_department, color: Colors.white),
+              selectedIcon: const Icon(Icons.local_fire_department, color: Colors.black), // Black for visibility
+              label: 'Kickoff',
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.bar_chart, color: Colors.white),
+              selectedIcon: const Icon(Icons.bar_chart, color: Colors.black), // Black for visibility
+              label: 'Stats',
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.person, color: Colors.white),
+              selectedIcon: const Icon(Icons.person, color: Colors.black), // Black for visibility
+              label: 'Me',
+            ),
           ],
         ),
       ),
@@ -221,11 +249,11 @@ class _GrainPainter extends CustomPainter {
 
     final rnd = math.Random(seed);
     final Paint darkPaint = Paint()
-      ..color = Colors.black.withOpacity(opacity)
+      ..color = Colors.black.withValues(alpha: opacity)
       ..strokeWidth = 1.0
       ..strokeCap = StrokeCap.round;
     final Paint lightPaint = Paint()
-      ..color = Colors.white.withOpacity(opacity * 0.35)
+      ..color = Colors.white.withValues(alpha: opacity * 0.35)
       ..strokeWidth = 1.0
       ..strokeCap = StrokeCap.round;
 
@@ -249,7 +277,7 @@ class _GrainPainter extends CustomPainter {
       final double x = rnd.nextDouble() * size.width;
       final double y = rnd.nextDouble() * size.height;
       final double radius = 0.6 + rnd.nextDouble() * 1.8;
-      final Paint blobPaint = Paint()..color = Colors.black.withOpacity(opacity * 1.2);
+      final Paint blobPaint = Paint()..color = Colors.black.withValues(alpha: opacity * 1.2);
       canvas.drawCircle(Offset(x, y), radius, blobPaint);
     }
   }
@@ -264,10 +292,16 @@ class _GrainPainter extends CustomPainter {
 /// Generic placeholder page for other tabs
 class _PlaceholderPage extends StatelessWidget {
   final String title;
-  const _PlaceholderPage({required this.title, super.key});
+  final Color backgroundColor;
+  const _PlaceholderPage({required this.title, this.backgroundColor = Colors.black, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 20)));
+    return Container(
+      color: backgroundColor,
+      child: Center(
+        child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 20)),
+      ),
+    );
   }
 }
