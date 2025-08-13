@@ -5,11 +5,42 @@ import 'package:turfr_app/features/auth/presentation/home_page.dart';
 
 import '../providers.dart';
 
-class LoginPage extends ConsumerWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200), // Slower animation
+    );
+    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack), // More dramatic curve
+    );
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final buttonShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     );
@@ -30,7 +61,18 @@ class LoginPage extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SvgPicture.asset('assets/images/turfr_logo.svg', height: 120),
+                  AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return Opacity(
+                        opacity: _opacityAnimation.value,
+                        child: Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: SvgPicture.asset('assets/images/turfr_logo.svg', height: 120),
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 32),
                   TextField(
                     decoration: InputDecoration(
@@ -76,16 +118,28 @@ class LoginPage extends ConsumerWidget {
 
                         scaffoldMessenger.hideCurrentSnackBar();
 
-                        if (result != null) {
+                        if (result != null && result.user != null) {
                           scaffoldMessenger.showSnackBar(
-                            SnackBar(content: Text('Welcome, ${result.user?.displayName}!')),
+                            SnackBar(content: Text('Welcome, ${result.user!.displayName ?? "user"}!')),
                           );
+                          // Smooth fade transition to HomePage
+                          await Future.delayed(const Duration(milliseconds: 400)); // Let user see the welcome
+                          if (!mounted) return;
                           Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (_) => const HomePage()),
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
+                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                              transitionDuration: const Duration(milliseconds: 700),
+                            ),
                           );
                         } else {
                           scaffoldMessenger.showSnackBar(
-                            const SnackBar(content: Text("Sign-in was cancelled 😕")),
+                            const SnackBar(content: Text("Sign-in failed: No user returned. Please try again.")),
                           );
                         }
                       } catch (e, st) {

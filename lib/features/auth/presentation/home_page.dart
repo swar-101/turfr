@@ -33,6 +33,15 @@ class _HomePageState extends ConsumerState<HomePage> {
   static const double grainDensity = 0.9;
   static const int grainSeed = 42; // change to re-seed pattern
 
+  // Tab background colors for dark mode
+  static final List<Color> tabColors = [
+    Colors.blue.shade900,   // Home
+    Colors.red.shade900,    // Squad
+    Colors.orange.shade900, // Kickoff
+    Colors.green.shade900,  // Stats
+    Colors.black,           // Me (default)
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,8 +71,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       // Stack: base green -> procedural grain -> subtle vignette -> content
       body: Stack(
         children: [
-          // Base green background (muted)
-          Container(color: const Color(0xFF0C3B2F)),
+          // Dynamic background color based on selected tab
+          Container(color: tabColors[_currentIndex]),
 
           // Procedural grain painter: no seams, adjustable density & opacity
           Positioned.fill(
@@ -106,20 +115,31 @@ class _HomePageState extends ConsumerState<HomePage> {
         ],
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _currentIndex,
-        onTap: (int idx) => setState(() => _currentIndex = idx),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.groups_3), label: 'Squad'),
-          BottomNavigationBarItem(icon: Icon(Icons.local_fire_department), label: 'Kickoff'),
-          BottomNavigationBarItem(icon: Icon(Icons.monitor), label: 'Stats'),
-          BottomNavigationBarItem(icon: Icon(Icons.man), label: 'Me'),
-        ],
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            backgroundColor: Colors.black,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey,
+          ),
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          enableFeedback: false,
+          currentIndex: _currentIndex,
+          onTap: (int idx) => setState(() => _currentIndex = idx),
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.groups_3), label: 'Squad'),
+            BottomNavigationBarItem(icon: Icon(Icons.local_fire_department), label: 'Kickoff'),
+            BottomNavigationBarItem(icon: Icon(Icons.monitor), label: 'Stats'),
+            BottomNavigationBarItem(icon: Icon(Icons.man), label: 'Me'),
+          ],
+        ),
       ),
     );
   }
