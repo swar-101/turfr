@@ -1,12 +1,20 @@
 # turfr
 
-## Login Page 
-
-Features: 
-1. Supports Google Sign In via Firestore Auth
-
-## Kick Off
-
+---
+# Features: 
 
 ## KickBits
 
+## KickMates
+
+## KickOff
+
+## UserProfile
+
+## Stats
+
+## Payments
+
+## Formation
+
+## DrawingBoard
