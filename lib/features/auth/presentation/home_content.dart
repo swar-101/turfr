@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:turfr_app/features/auth/presentation/kickbits_card.dart';
+
 import '../data/user_repository.dart';
-import 'friendlist_preview.dart';
-import 'kickoff_matchlist.dart';
 
 class HomeContent extends StatelessWidget {
   HomeContent({super.key});
@@ -37,8 +36,8 @@ class HomeContent extends StatelessWidget {
           children: [
             KickBitsCard(balance: kickBits),
             const SizedBox(height: 24),
-            const FriendListPreview(),
-            const KickOffMatchList(),
+            // const FriendListPreview(),
+            // const KickOffMatchList(),
           ],
         );
       },
