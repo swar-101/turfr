@@ -9,6 +9,8 @@ class User {
   final int dribbling;
   final int shooting;
   final int defending;
+  final double skillLevel;
+  final List<String> gallery;
 
   User({
     required this.id,
@@ -19,10 +21,24 @@ class User {
     required this.dribbling,
     required this.shooting,
     required this.defending,
+    required this.skillLevel,
+    required this.gallery,
   });
 
   factory User.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    double skillLevelValue = 0.0;
+    if (data['skillLevel'] != null) {
+      if (data['skillLevel'] is int) {
+        skillLevelValue = (data['skillLevel'] as int).toDouble();
+      } else if (data['skillLevel'] is double) {
+        skillLevelValue = data['skillLevel'];
+      }
+    }
+    List<String> galleryList = [];
+    if (data['gallery'] != null && data['gallery'] is List) {
+      galleryList = List<String>.from(data['gallery']);
+    }
     return User(
       id: doc.id,
       name: data['name'] ?? '',
@@ -32,6 +48,8 @@ class User {
       dribbling: data['dribbling'] ?? 0,
       shooting: data['shooting'] ?? 0,
       defending: data['defending'] ?? 0,
+      skillLevel: skillLevelValue,
+      gallery: galleryList,
     );
   }
 
@@ -44,6 +62,8 @@ class User {
       'dribbling': dribbling,
       'shooting': shooting,
       'defending': defending,
+      'skillLevel': skillLevel,
+      'gallery': gallery,
     };
   }
 }

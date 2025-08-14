@@ -4,14 +4,19 @@ import 'user_repository.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth;
-  final GoogleSignIn _googleSignIn;
   final UserRepository _userRepository;
 
-  AuthRepository(this._auth, this._googleSignIn, this._userRepository);
+  AuthRepository(this._auth, this._userRepository);
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      final googleUser = await _googleSignIn.signIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.disconnect();
+      } else {
+        await googleSignIn.signOut();
+      }
+      final googleUser = await googleSignIn.signIn();
       if (googleUser == null) return null;
 
       final googleAuth = await googleUser.authentication;
@@ -39,7 +44,6 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
-    await _googleSignIn.signOut();
     await _auth.signOut();
   }
 

@@ -18,10 +18,8 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
-  final googleSignIn = ref.watch(googleSignInProvider);
   final userRepository = ref.watch(userRepositoryProvider);
-
-  return AuthRepository(auth, googleSignIn, userRepository);
+  return AuthRepository(auth, userRepository);
 });
 
 final authStateChangesProvider = StreamProvider.autoDispose<User?>((ref) {
@@ -31,4 +29,3 @@ final authStateChangesProvider = StreamProvider.autoDispose<User?>((ref) {
 final currentUserProvider = Provider<User?>((ref) {
   return ref.watch(firebaseAuthProvider).currentUser;
 });
-

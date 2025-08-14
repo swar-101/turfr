@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class ProfilePhotoWidget extends StatefulWidget {
-  const ProfilePhotoWidget({Key? key}) : super(key: key);
+  final String? photoUrl;
+  const ProfilePhotoWidget({Key? key, this.photoUrl}) : super(key: key);
 
   @override
   State<ProfilePhotoWidget> createState() => _ProfilePhotoWidgetState();
@@ -21,7 +22,11 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
   @override
   void initState() {
     super.initState();
-    _loadPhotoUrl();
+    if (widget.photoUrl != null && widget.photoUrl!.isNotEmpty) {
+      _photoUrl = widget.photoUrl;
+    } else {
+      _loadPhotoUrl();
+    }
   }
 
   Future<void> _loadPhotoUrl() async {

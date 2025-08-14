@@ -61,9 +61,9 @@ class _MePageState extends State<MePage> {
               });
             },
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
-                if (states.contains(MaterialState.selected)) {
-                  return Theme.of(context).colorScheme.primary.withOpacity(0.1);
+              backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
                 }
                 return null;
               }),
@@ -76,19 +76,24 @@ class _MePageState extends State<MePage> {
   }
 
   Widget _buildSegmentContent() {
+    print('MePage: _selectedIndex=$_selectedIndex, userData=${userData != null ? 'loaded' : 'null'}');
     if (isLoading) {
+      print('MePage: Loading user data...');
       return const Center(child: CircularProgressIndicator());
     }
     if (userData == null) {
+      print('MePage: No user data found!');
       return const Center(child: Text('No user data found.'));
     }
     switch (_selectedIndex) {
       case 0:
+        print('MePage: Rendering Info segment (Overall card should be visible)');
+        double overall = ((userData!.passing + userData!.dribbling + userData!.shooting + userData!.defending) / 4.0);
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const ProfilePhotoWidget(),
+              ProfilePhotoWidget(photoUrl: userData!.photoUrl),
               const SizedBox(height: 16),
               Text(
                 userData!.name,
@@ -102,20 +107,162 @@ class _MePageState extends State<MePage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              Text('Skills', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              _buildSkillBar('Passing', userData!.passing),
-              _buildSkillBar('Dribbling', userData!.dribbling),
-              _buildSkillBar('Shooting', userData!.shooting),
-              _buildSkillBar('Defending', userData!.defending),
+              GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Attributes', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 16),
+                            _buildSkillBar('Passing', userData!.passing),
+                            _buildSkillBar('Dribbling', userData!.dribbling),
+                            _buildSkillBar('Shooting', userData!.shooting),
+                            _buildSkillBar('Defending', userData!.defending),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+                    child: Column(
+                      children: [
+                        Text('Overall', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 8),
+                        Text(overall.toStringAsFixed(1), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         );
       case 1:
-        return const Center(child: Text('Skills', style: TextStyle(fontSize: 20)));
+        print('MePage: Rendering Skills segment (Sliders should be visible)');
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 24),
+              _buildSkillSlider('Passing', userData!.passing, (value) async {
+                setState(() {
+                  userData = User(
+                    id: userData!.id,
+                    name: userData!.name,
+                    phone: userData!.phone,
+                    photoUrl: userData!.photoUrl,
+                    passing: value,
+                    dribbling: userData!.dribbling,
+                    shooting: userData!.shooting,
+                    defending: userData!.defending,
+                    skillLevel: userData!.skillLevel,
+                    gallery: userData!.gallery,
+                  );
+                });
+                await UserService().setUser(userData!);
+              }),
+              _buildSkillSlider('Dribbling', userData!.dribbling, (value) async {
+                setState(() {
+                  userData = User(
+                    id: userData!.id,
+                    name: userData!.name,
+                    phone: userData!.phone,
+                    photoUrl: userData!.photoUrl,
+                    passing: userData!.passing,
+                    dribbling: value,
+                    shooting: userData!.shooting,
+                    defending: userData!.defending,
+                    skillLevel: userData!.skillLevel,
+                    gallery: userData!.gallery,
+                  );
+                });
+                await UserService().setUser(userData!);
+              }),
+              _buildSkillSlider('Shooting', userData!.shooting, (value) async {
+                setState(() {
+                  userData = User(
+                    id: userData!.id,
+                    name: userData!.name,
+                    phone: userData!.phone,
+                    photoUrl: userData!.photoUrl,
+                    passing: userData!.passing,
+                    dribbling: userData!.dribbling,
+                    shooting: value,
+                    defending: userData!.defending,
+                    skillLevel: userData!.skillLevel,
+                    gallery: userData!.gallery,
+                  );
+                });
+                await UserService().setUser(userData!);
+              }),
+              _buildSkillSlider('Defending', userData!.defending, (value) async {
+                setState(() {
+                  userData = User(
+                    id: userData!.id,
+                    name: userData!.name,
+                    phone: userData!.phone,
+                    photoUrl: userData!.photoUrl,
+                    passing: userData!.passing,
+                    dribbling: userData!.dribbling,
+                    shooting: userData!.shooting,
+                    defending: value,
+                    skillLevel: userData!.skillLevel,
+                    gallery: userData!.gallery,
+                  );
+                });
+                await UserService().setUser(userData!);
+              }),
+            ],
+          ),
+        );
       case 2:
-        return const Center(child: Text('Photos', style: TextStyle(fontSize: 20)));
+        print('MePage: Rendering Photos segment');
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 24),
+              Text('Profile Photo', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              ProfilePhotoWidget(photoUrl: userData!.photoUrl),
+              const SizedBox(height: 24),
+              Text('Gallery', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              userData!.gallery.isEmpty
+                  ? const Text('No gallery photos yet.', style: TextStyle(color: Colors.grey))
+                  : SizedBox(
+                      height: 120,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: userData!.gallery.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          final url = userData!.gallery[index];
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(url, width: 120, height: 120, fit: BoxFit.cover, errorBuilder: (c, e, s) => Container(width: 120, height: 120, color: Colors.grey[300], child: const Icon(Icons.broken_image)),),
+                          );
+                        },
+                      ),
+                    ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
       default:
+        print('MePage: Unknown segment');
         return const SizedBox.shrink();
     }
   }
@@ -140,6 +287,26 @@ class _MePageState extends State<MePage> {
           Text('$value/100', style: TextStyle(fontSize: 10, color: Colors.grey[500])),
         ],
       ),
+    );
+  }
+
+  Widget _buildSkillSlider(String label, int value, Function(int) onChanged) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 18)),
+        Slider(
+          value: value.toDouble(),
+          min: 0,
+          max: 100,
+          divisions: 100,
+          label: value.toString(),
+          onChanged: (double newValue) {
+            onChanged(newValue.round());
+          },
+        ),
+        Text('Current $label: $value'),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }
