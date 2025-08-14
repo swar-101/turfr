@@ -1,16 +1,14 @@
-import 'dart:convert';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'features/auth/presentation/edit_profile_page.dart';
 import 'features/auth/presentation/home_page.dart';
 import 'features/auth/presentation/login_page.dart';
 import 'features/me_page.dart';
 import 'features/auth/providers/providers.dart';
+import 'features/update/update_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +25,10 @@ class MyApp extends ConsumerWidget {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final update = await fetchUpdateInfo();
-      if (update != null && update.latestVersion != '1.0.0') { // compare with current version
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = packageInfo.version;
+
+      if (update != null && update.latestVersion != currentVersion) {
         await showUpdateDialog(context, update);
       }
     });
@@ -58,52 +59,4 @@ class MyApp extends ConsumerWidget {
       },
     );
   }
-}
-class UpdateInfo {
-  final String latestVersion;
-  final String apkUrl;
-  final String changelog;
-
-  UpdateInfo({required this.latestVersion, required this.apkUrl, required this.changelog});
-
-  factory UpdateInfo.fromJson(Map<String, dynamic> json) {
-    return UpdateInfo(
-      latestVersion: json['latestVersion'],
-      apkUrl: json['apkUrl'],
-      changelog: json['changelog'] ?? '',
-    );
-  }
-}
-Future<UpdateInfo?> fetchUpdateInfo() async {
-  try {
-    final url = Uri.parse('https://raw.githubusercontent.com/swar-101/turfr/main/update.json');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      return UpdateInfo.fromJson(json.decode(response.body));
-    }
-  } catch (e) {
-    debugPrint('Error fetching update info: $e');
-  }
-  return null;
-}
-Future<void> showUpdateDialog(BuildContext context, UpdateInfo update) async {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => AlertDialog(
-      title: const Text('Update Available'),
-      content: Text('Version ${update.latestVersion} is available.\n\n${update.changelog}'),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            final uri = Uri.parse(update.apkUrl);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri);
-            }
-          },
-          child: const Text('Update Now'),
-        ),
-      ],
-    ),
-  );
 }

@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'home_content.dart';
 import '../../me_page.dart';
 
@@ -28,8 +29,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   // Dynamic indicator colors for navbar selection
   static final List<Color> navIndicatorColors = [
-    Color(0xFF001F3F), // Home - Navy Blue
-    Color(0xFF7B1F1F), // Squad - Navy Red
+    Color(0xFF2979FF), // Home - Bright Blue
+    Color(0xFFFF1744), // Squad - Bright Red
     Color(0xFFFF4500), // Kickoff - Fiery Orange
     Color(0xFF4FF6A8), // Stats - Bright Green
     Color(0xFFB57CF6), // Me - Lavender
@@ -101,13 +102,31 @@ class _HomePageState extends ConsumerState<HomePage> {
                     colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'v.1.0.32',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox(height: 12);
+                      }
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const Text(
+                          'Version unavailable',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      }
+                      return Text(
+                        'v.${snapshot.data!.version}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
