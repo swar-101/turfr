@@ -37,11 +37,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   ];
 
   static final List<Widget> _pages = <Widget>[
-    Container(color: Colors.black, child: HomeContent()),
-    const _PlaceholderPage(title: 'Squad', backgroundColor: Colors.black),
-    const _PlaceholderPage(title: 'Kickoff', backgroundColor: Colors.black),
-    const _PlaceholderPage(title: 'Stats', backgroundColor: Colors.black),
-    const MePage(),
+    _GradientPage(child: HomeContent()),
+    _GradientPage(child: _PlaceholderPage(title: 'Squad', backgroundColor: Colors.transparent)),
+    _GradientPage(child: _PlaceholderPage(title: 'Kickoff', backgroundColor: Colors.transparent)),
+    _GradientPage(child: _PlaceholderPage(title: 'Stats', backgroundColor: Colors.transparent)),
+    _GradientPage(child: MePage()),
   ];
 
   @override
@@ -305,6 +305,31 @@ class _GrainPainter extends CustomPainter {
   bool shouldRepaint(covariant _GrainPainter old) {
     // Grain is static; repaint only if params change.
     return old.seed != seed || old.opacity != opacity || old.density != density;
+  }
+}
+
+/// Gradient overlay page - wraps content with a top-to-bottom gradient fade.
+class _GradientPage extends StatelessWidget {
+  final Widget child;
+  const _GradientPage({required this.child, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.black, // Pitch black at the top
+            Colors.black, // Still black at 75%
+            Color(0xFF212121), // Dark grey at the bottom
+          ],
+          stops: [0.0, 0.75, 1.0],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: child,
+    );
   }
 }
 
