@@ -50,32 +50,29 @@ class _HomePageState extends ConsumerState<HomePage> {
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       appBar: _currentIndex == 4 ? null : AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.black.withValues(alpha: 0.5),
         elevation: 3,
         centerTitle: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
-        title: SvgPicture.asset(
-          'assets/images/turfr_logo.svg',
-          height: 36,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        title: Stack(
+          alignment: Alignment.center,
+          children: [
+            Opacity(
+              opacity: 0.13, // Subtle visibility
+              child: Image.asset(
+                'assets/images/hamburger_menu_net.png',
+                height: 36,
+                fit: BoxFit.contain,
+              ),
+            ),
+            SvgPicture.asset(
+              'assets/images/turfr_logo.svg',
+              height: 36,
+            ),
+          ],
         ),
-        iconTheme: const IconThemeData(color: Colors.white, size: 28),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => Navigator.of(context).pushNamed('/editProfile'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              // TODO: Replace with your actual logout logic
-              // Example: ref.read(authProvider.notifier).logout();
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
-          ),
-        ],
       ),
       drawer: _currentIndex == 4 ? null : Drawer(
         backgroundColor: Colors.black.withAlpha(160),
@@ -85,7 +82,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            // Replace DrawerHeader with a custom Container for full control
+            Container(
+              padding: const EdgeInsets.only(top: 0, left: 0, right: 0, bottom: 0),
               decoration: const BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.only(
@@ -93,54 +92,84 @@ class _HomePageState extends ConsumerState<HomePage> {
                   bottomRight: Radius.circular(32),
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              height: 160, // Same as DrawerHeader default
+              width: double.infinity,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  SvgPicture.asset(
-                    'assets/images/turfr_logo.svg',
-                    height: 48,
-                    colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                  ),
-                  const SizedBox(height: 8),
-                  FutureBuilder<PackageInfo>(
-                    future: PackageInfo.fromPlatform(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox(height: 12);
-                      }
-                      if (snapshot.hasError || !snapshot.hasData) {
-                        return const Text(
-                          'Version unavailable',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      }
-                      return Text(
-                        'v.${snapshot.data!.version}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      );
+                  ShaderMask(
+                    shaderCallback: (Rect bounds) {
+                      return const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white,
+                          Colors.transparent,
+                        ],
+                        stops: [0.6, 1.0], // Fade out at the bottom 40%
+                      ).createShader(bounds);
                     },
+                    blendMode: BlendMode.dstIn,
+                    child: Opacity(
+                      opacity: 0.13, // Subtle net effect
+                      child: Image.asset(
+                        'assets/images/hamburger_menu_net.png',
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/turfr_logo.svg',
+                        height: 48,
+                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      ),
+                      const SizedBox(height: 8),
+                      FutureBuilder<PackageInfo>(
+                        future: PackageInfo.fromPlatform(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const SizedBox(height: 12);
+                          }
+                          if (snapshot.hasError || !snapshot.hasData) {
+                            return const Text(
+                              'Version unavailable',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          }
+                          return Text(
+                            'v.${snapshot.data!.version}',
+                            style: const TextStyle(
+                              fontFamily: 'IBM3270',
+                              color: Colors.white70,
+                              fontSize: 16, // Increased for visibility
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            // No divider, SizedBox, or Container between header and ListTiles
             ListTile(
               leading: const Icon(Icons.settings, color: Colors.white, size: 24),
               title: const Text('Settings', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             ),
             ListTile(
               leading: const Icon(Icons.info_outline, color: Colors.white, size: 24),
               title: const Text('About', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             ),
           ],
@@ -197,45 +226,47 @@ class _HomePageState extends ConsumerState<HomePage> {
         data: Theme.of(context).copyWith(
           splashFactory: NoSplash.splashFactory,
           navigationBarTheme: NavigationBarThemeData(
-            labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>((states) {
+            labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
               return const TextStyle(
                 fontWeight: FontWeight.w300, // Thinner than w400
                 fontSize: 12,
                 color: Colors.white,
               );
             }),
+            indicatorColor: navIndicatorColors[_currentIndex],
+            backgroundColor: Colors.black.withValues(alpha: 0.4), // More translucent
           ),
         ),
         child: NavigationBar(
           height: 60,
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.black.withValues(alpha: 0.4), // More translucent
           indicatorColor: navIndicatorColors[_currentIndex],
           selectedIndex: _currentIndex,
           onDestinationSelected: (int idx) => setState(() => _currentIndex = idx),
           destinations: [
             NavigationDestination(
               icon: const Icon(Icons.home, color: Colors.white),
-              selectedIcon: const Icon(Icons.home, color: Colors.black), // Black for visibility
+              selectedIcon: const Icon(Icons.home, color: Colors.black),
               label: 'Home',
             ),
             NavigationDestination(
               icon: const Icon(Icons.groups_3, color: Colors.white),
-              selectedIcon: const Icon(Icons.groups_3, color: Colors.black), // Black for visibility
+              selectedIcon: const Icon(Icons.groups_3, color: Colors.black),
               label: 'Squad',
             ),
             NavigationDestination(
               icon: const Icon(Icons.local_fire_department, color: Colors.white),
-              selectedIcon: const Icon(Icons.local_fire_department, color: Colors.black), // Black for visibility
+              selectedIcon: const Icon(Icons.local_fire_department, color: Colors.black),
               label: 'Kickoff',
             ),
             NavigationDestination(
               icon: const Icon(Icons.bar_chart, color: Colors.white),
-              selectedIcon: const Icon(Icons.bar_chart, color: Colors.black), // Black for visibility
+              selectedIcon: const Icon(Icons.bar_chart, color: Colors.black),
               label: 'Stats',
             ),
             NavigationDestination(
               icon: const Icon(Icons.person, color: Colors.white),
-              selectedIcon: const Icon(Icons.person, color: Colors.black), // Black for visibility
+              selectedIcon: const Icon(Icons.person, color: Colors.black),
               label: 'Me',
             ),
           ],
@@ -319,8 +350,8 @@ class _GradientPage extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black, // Pitch black at the top
-            Colors.black, // Still black at 75%
+            Colors.transparent, // Transparent at the top for AppBar translucency
+            Colors.black, // Black at 75%
             Color(0xFF212121), // Dark grey at the bottom
           ],
           stops: [0.0, 0.75, 1.0],

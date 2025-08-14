@@ -36,7 +36,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final userProfileAsync = ref.watch(userProfileProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Edit Profile')),
+      appBar: AppBar(title: const Text('Edit Profile')),
       body: userProfileAsync.when(
         data: (profile) {
           _displayNameController = TextEditingController(text: profile['displayName'] ?? '');
