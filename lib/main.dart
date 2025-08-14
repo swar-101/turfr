@@ -44,6 +44,7 @@ class MyApp extends ConsumerWidget {
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(
           elevation: 0,
+          backgroundColor: Color(0xFFE1BEE7), // Brighter shade of purpleAccent
         ),
       ),
       home: authState.when(
