@@ -33,7 +33,10 @@ class MyApp extends ConsumerWidget {
         await showUpdateDialog(context, update);
       }
     });
-
+    // material3 theme with dark mode and purple accent
+    // brighter shade of purpleAccent for appBar
+    // and black background for the app
+    // using MaterialApp with debugShowCheckedModeBanner set to false
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
