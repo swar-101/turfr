@@ -1,5 +1,5 @@
 {
-  "latestVersion": "2.0.2+1",
-  "apkUrl": "https://github.com/swar-101/turfr/releases/download/2.0.2/turfr-2.0.2.apk",
-  "changelog": "## 2.0.2\n- Minor fixes and stability improvements."
+  "latestVersion": "1.0.0+1",
+  "apkUrl": "https://github.com/swar-101/turfr/releases/download/1.0.0/turfr-1.0.0.apk",
+  "changelog": "## 1.0.0\n- Initial public release."
 }
