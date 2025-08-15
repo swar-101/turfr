@@ -1,5 +1,5 @@
 {
   "latestVersion": "2.0.1",
   "apkUrl": "https://github.com/swar-101/turfr/releases/download/test2/turfr-2.0.0.apk",
-  "changelog" : "Initial test release"
+  "changelog" : "## 2.0.1\n- Fixed a bug that caused the app to crash on startup for some users.\n\n## 2.0.0\n- Major performance improvements.\n- Added new features for better user experience.\n- Updated UI design for a more modern look."
 }
