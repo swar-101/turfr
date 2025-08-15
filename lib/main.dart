@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import 'features/auth/presentation/edit_profile_page.dart';
 import 'features/auth/presentation/home_page.dart';
@@ -60,4 +61,22 @@ class MyApp extends ConsumerWidget {
       },
     );
   }
+}
+Future<bool> isUpdateAvailable(String latestVersion) async {
+  final packageInfo = await PackageInfo.fromPlatform();
+
+  final currentVersionStr = packageInfo.buildNumber != '0'
+      ? '${packageInfo.version}+${packageInfo.buildNumber}'
+      : packageInfo.version;
+
+  final current = Version.parse(currentVersionStr.split('+')[0]);
+  final latest = Version.parse(latestVersion.split('+')[0]);
+
+  if (latest == current && latestVersion.contains('+') && currentVersionStr.contains('+')) {
+    final latestBuild = int.tryParse(latestVersion.split('+')[1]) ?? 0;
+    final currentBuild = int.tryParse(currentVersionStr.split('+')[1]) ?? 0;
+    return latestBuild > currentBuild;
+  }
+
+  return latest > current;
 }
