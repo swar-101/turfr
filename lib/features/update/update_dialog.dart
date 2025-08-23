@@ -193,13 +193,21 @@ Future<void> showUpdateDialog(BuildContext context, UpdateInfo update) async {
                       setState(() => isLaunching = true);
                       final uri = Uri.parse(update.apkUrl);
                       bool launched = false;
+                      String errorMsg = '';
                       try {
-                        launched = await launchUrl(
-                          uri,
-                          mode: LaunchMode.externalApplication,
-                        );
+                        // Basic URL validity check
+                        if (uri.scheme.isEmpty || uri.host.isEmpty) {
+                          errorMsg = 'Invalid update URL.';
+                        } else {
+                          launched = await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
                       } catch (e) {
-                        if (kDebugMode) debugPrint('Failed to launch update URL: $e');
+                        errorMsg = 'Failed to launch update URL: '
+                            '${e.toString()}';
+                        if (kDebugMode) debugPrint(errorMsg);
                       }
                       // Close the dialog regardless; user can return to the app after download.
                       if (Navigator.of(ctx).canPop()) {
@@ -212,14 +220,16 @@ Future<void> showUpdateDialog(BuildContext context, UpdateInfo update) async {
                         } catch (_) {}
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not open the download link. URL copied to clipboard.'),
+                            SnackBar(
+                              content: Text(errorMsg.isNotEmpty
+                                  ? errorMsg + ' URL copied to clipboard.'
+                                  : 'Could not open the download link. URL copied to clipboard.'),
                             ),
                           );
                         }
                       }
                     },
-              child: const Text('Update Now'),
+              child: const Text('Update'),
             ),
           ],
         ),

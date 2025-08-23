@@ -48,6 +48,13 @@ class _AppInitializerState extends State<AppInitializer> {
           await showUpdateDialog(context, update);
         }
       } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Your app is already up to date.'),
+            ),
+          );
+        }
         if (kDebugMode) {
           debugPrint('No update available. Current app is up to date.');
         }
@@ -101,7 +108,7 @@ class MyApp extends ConsumerWidget {
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(
           elevation: 0,
-          backgroundColor: Color(0xFFE1BEE7), // Brighter shade of purpleAccent
+          backgroundColor: Color(0xFFB71C1C), // Unified grayish red for squad/discover friends
         ),
       ),
       home: authState.when(

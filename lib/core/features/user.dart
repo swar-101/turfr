@@ -9,6 +9,8 @@ class User {
   final int dribbling;
   final int shooting;
   final int defending;
+  final int stamina;
+  final int physical;
   final double skillLevel;
   final List<String> gallery;
 
@@ -21,6 +23,8 @@ class User {
     required this.dribbling,
     required this.shooting,
     required this.defending,
+    required this.stamina,
+    required this.physical,
     required this.skillLevel,
     required this.gallery,
   });
@@ -48,6 +52,8 @@ class User {
       dribbling: data['dribbling'] ?? 0,
       shooting: data['shooting'] ?? 0,
       defending: data['defending'] ?? 0,
+      stamina: data['stamina'] ?? 0,
+      physical: data['physical'] ?? 0,
       skillLevel: skillLevelValue,
       gallery: galleryList,
     );
@@ -62,6 +68,8 @@ class User {
       'dribbling': dribbling,
       'shooting': shooting,
       'defending': defending,
+      'stamina': stamina,
+      'physical': physical,
       'skillLevel': skillLevel,
       'gallery': gallery,
     };

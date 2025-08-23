@@ -13,6 +13,11 @@ class UserRepository {
         'displayName': firebaseUser.displayName ?? 'user',
         'email': firebaseUser.email ?? '',
         'kickBits': 0,
+        'skills': {
+          'defending': 0,
+          'shooting': 0,
+          'passing': 0,
+        },
         'friends': <String>[],
         'friendRequests': <String>[],
         'createdAt': FieldValue.serverTimestamp(),

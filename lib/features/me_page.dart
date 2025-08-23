@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'profile_photo_widget.dart';
 import '../core/features/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'custom_hexagon_radar_chart.dart';
 
 class MePage extends StatefulWidget {
   const MePage({Key? key}) : super(key: key);
@@ -87,27 +88,29 @@ class _MePageState extends State<MePage> {
     }
     switch (_selectedIndex) {
       case 0:
-        print('MePage: Rendering Info segment (Overall card should be visible)');
-        double overall = ((userData!.passing + userData!.dribbling + userData!.shooting + userData!.defending) / 4.0);
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ProfilePhotoWidget(photoUrl: userData!.photoUrl),
-              const SizedBox(height: 16),
-              Text(
-                userData!.name,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                userData!.phone,
-                style: TextStyle(fontSize: 16, color: Colors.grey[400]),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
+        print('MePage: Rendering Info segment (Spider chart should be visible)');
+        double overall = ((userData!.passing + userData!.dribbling + userData!.shooting + userData!.defending + userData!.stamina + userData!.physical) / 6.0);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 8),
+            ProfilePhotoWidget(photoUrl: userData!.photoUrl),
+            const SizedBox(height: 12),
+            Text(
+              userData!.name,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              userData!.phone,
+              style: TextStyle(fontSize: 14, color: Colors.grey[400]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            // Clickable Spider chart card
+            Expanded(
+              child: GestureDetector(
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
@@ -123,6 +126,8 @@ class _MePageState extends State<MePage> {
                             _buildSkillBar('Dribbling', userData!.dribbling),
                             _buildSkillBar('Shooting', userData!.shooting),
                             _buildSkillBar('Defending', userData!.defending),
+                            _buildSkillBar('Stamina', userData!.stamina),
+                            _buildSkillBar('Physical', userData!.physical),
                           ],
                         ),
                       );
@@ -130,24 +135,27 @@ class _MePageState extends State<MePage> {
                   );
                 },
                 child: Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
-                    child: Column(
-                      children: [
-                        Text('Overall', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8),
-                        Text(overall.toStringAsFixed(1), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-                      ],
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  color: Colors.black,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    child: CustomHexagonRadarChart(
+                      features: const ['Passing', 'Dribbling', 'Shooting', 'Defending', 'Stamina', 'Physical'],
+                      data: [userData!.passing.toDouble(), userData!.dribbling.toDouble(), userData!.shooting.toDouble(), userData!.defending.toDouble(), userData!.stamina.toDouble(), userData!.physical.toDouble()],
+                      accentColor: Theme.of(context).colorScheme.primary,
+                      gridColor: Colors.white,
+                      textColor: Colors.white,
+                      maxValue: 100.0,
+                      ticks: const [20, 40, 60, 80, 100],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+          ],
         );
       case 1:
         print('MePage: Rendering Skills segment (Sliders should be visible)');
@@ -167,6 +175,8 @@ class _MePageState extends State<MePage> {
                     dribbling: userData!.dribbling,
                     shooting: userData!.shooting,
                     defending: userData!.defending,
+                    stamina: userData!.stamina,
+                    physical: userData!.physical,
                     skillLevel: userData!.skillLevel,
                     gallery: userData!.gallery,
                   );
@@ -184,6 +194,8 @@ class _MePageState extends State<MePage> {
                     dribbling: value,
                     shooting: userData!.shooting,
                     defending: userData!.defending,
+                    stamina: userData!.stamina,
+                    physical: userData!.physical,
                     skillLevel: userData!.skillLevel,
                     gallery: userData!.gallery,
                   );
@@ -201,6 +213,8 @@ class _MePageState extends State<MePage> {
                     dribbling: userData!.dribbling,
                     shooting: value,
                     defending: userData!.defending,
+                    stamina: userData!.stamina,
+                    physical: userData!.physical,
                     skillLevel: userData!.skillLevel,
                     gallery: userData!.gallery,
                   );
@@ -218,6 +232,46 @@ class _MePageState extends State<MePage> {
                     dribbling: userData!.dribbling,
                     shooting: userData!.shooting,
                     defending: value,
+                    stamina: userData!.stamina,
+                    physical: userData!.physical,
+                    skillLevel: userData!.skillLevel,
+                    gallery: userData!.gallery,
+                  );
+                });
+                await UserService().setUser(userData!);
+              }),
+              _buildSkillSlider('Stamina', userData!.stamina, (value) async {
+                setState(() {
+                  userData = User(
+                    id: userData!.id,
+                    name: userData!.name,
+                    phone: userData!.phone,
+                    photoUrl: userData!.photoUrl,
+                    passing: userData!.passing,
+                    dribbling: userData!.dribbling,
+                    shooting: userData!.shooting,
+                    defending: userData!.defending,
+                    stamina: value,
+                    physical: userData!.physical,
+                    skillLevel: userData!.skillLevel,
+                    gallery: userData!.gallery,
+                  );
+                });
+                await UserService().setUser(userData!);
+              }),
+              _buildSkillSlider('Physical', userData!.physical, (value) async {
+                setState(() {
+                  userData = User(
+                    id: userData!.id,
+                    name: userData!.name,
+                    phone: userData!.phone,
+                    photoUrl: userData!.photoUrl,
+                    passing: userData!.passing,
+                    dribbling: userData!.dribbling,
+                    shooting: userData!.shooting,
+                    defending: userData!.defending,
+                    stamina: userData!.stamina,
+                    physical: value,
                     skillLevel: userData!.skillLevel,
                     gallery: userData!.gallery,
                   );

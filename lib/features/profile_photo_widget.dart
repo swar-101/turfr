@@ -95,9 +95,9 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
                     ? NetworkImage(_photoUrl!)
                     : _imageFile != null
                         ? FileImage(_imageFile!)
-                        : const AssetImage('assets/images/me.png') as ImageProvider,
+                        : const AssetImage('assets/images/user-default-icon.png') as ImageProvider,
                 child: (_photoUrl == null || _photoUrl!.isEmpty) && _imageFile == null
-                    ? const Icon(Icons.person, size: 64, color: Colors.white54)
+                    ? null // No icon, just the default image
                     : null,
               ),
               const SizedBox(height: 12),
