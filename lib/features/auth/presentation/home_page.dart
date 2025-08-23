@@ -8,6 +8,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'home_content.dart';
 import '../../me_page.dart';
+import 'current_friends_card.dart';
+import 'discover_friends_list.dart';
+import 'notification_list.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -19,6 +23,42 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _currentIndex = 0;
+  bool _showDiscover = false;
+
+  Widget _buildPage(int index) {
+    if (index == 0) return _GradientPage(child: HomeContent()); // removed const
+    if (index == 1) {
+      return _GradientPage(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const CurrentFriendsCard(),
+              const SizedBox(height: 24),
+              Column(
+                children: [
+                  ElevatedButton(
+                    child: Text(_showDiscover ? 'Hide Discover Friends' : 'Discover Friends'),
+                    onPressed: () {
+                      setState(() {
+                        _showDiscover = !_showDiscover;
+                      });
+                    },
+                  ),
+                  if (_showDiscover) DiscoverFriendsList(), // removed const
+                ],
+              ),
+              const SizedBox(height: 24),
+              const NotificationList(), // Add notification list below friends card
+            ],
+          ),
+        ),
+      );
+    }
+    if (index == 2) return _GradientPage(child: _PlaceholderPage(title: 'Kickoff', backgroundColor: Colors.transparent));
+    if (index == 3) return _GradientPage(child: _PlaceholderPage(title: 'Stats', backgroundColor: Colors.transparent));
+    if (index == 4) return _GradientPage(child: MePage());
+    return const SizedBox.shrink();
+  }
 
   // Grain settings — tweak to taste:
   // grainOpacity: 0.03 - 0.12 is subtle; raise for stronger effect.
@@ -36,21 +76,13 @@ class _HomePageState extends ConsumerState<HomePage> {
     Color(0xFFB57CF6), // Me - Lavender
   ];
 
-  static final List<Widget> _pages = <Widget>[
-    _GradientPage(child: HomeContent()),
-    _GradientPage(child: _PlaceholderPage(title: 'Squad', backgroundColor: Colors.transparent)),
-    _GradientPage(child: _PlaceholderPage(title: 'Kickoff', backgroundColor: Colors.transparent)),
-    _GradientPage(child: _PlaceholderPage(title: 'Stats', backgroundColor: Colors.transparent)),
-    _GradientPage(child: MePage()),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       appBar: _currentIndex == 4 ? null : AppBar(
-        backgroundColor: Colors.black.withValues(alpha: 0.5),
+        backgroundColor: navIndicatorColors[_currentIndex], // Dynamic color matches nav bar highlight blob
         elevation: 3,
         centerTitle: true,
         shape: const RoundedRectangleBorder(
@@ -73,6 +105,18 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.of(context).pushReplacementNamed('/login');
+              }
+            },
+          ),
+        ],
       ),
       drawer: _currentIndex == 4 ? null : Drawer(
         backgroundColor: Colors.black.withAlpha(160),
@@ -217,7 +261,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
           // Main safe-area content
           SafeArea(
-            child: _pages[_currentIndex],
+            child: _buildPage(_currentIndex), // Use dynamic page builder
           ),
         ],
       ),
@@ -234,12 +278,12 @@ class _HomePageState extends ConsumerState<HomePage> {
               );
             }),
             indicatorColor: navIndicatorColors[_currentIndex],
-            backgroundColor: Colors.black.withValues(alpha: 0.4), // More translucent
+            backgroundColor: Color(0xFF212121), // Match brighter gray in gradient
           ),
         ),
         child: NavigationBar(
           height: 60,
-          backgroundColor: Colors.black.withValues(alpha: 0.4), // More translucent
+          backgroundColor: Color(0xFF212121), // Match brighter gray in gradient
           indicatorColor: navIndicatorColors[_currentIndex],
           selectedIndex: _currentIndex,
           onDestinationSelected: (int idx) => setState(() => _currentIndex = idx),
