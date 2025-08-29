@@ -18,6 +18,8 @@ build/
 **/android/build/
 **/android/.idea/
 **/android/local.properties
+**/android/app/upload-keystore.jks
+**/android/key.properties
 
 # iOS related
 **/ios/Flutter/.last_build_id

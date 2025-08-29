@@ -20,6 +20,7 @@ class UserRepository {
         },
         'friends': <String>[],
         'friendRequests': <String>[],
+        'sentFriendRequests': <String>[],
         'createdAt': FieldValue.serverTimestamp(),
       });
     }

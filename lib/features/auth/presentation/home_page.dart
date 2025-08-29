@@ -1,13 +1,15 @@
 // lib/features/auth/presentation/home_page.dart
+// Updated to remove all package_info_plus dependencies
 
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'home_content.dart';
 import '../../me_page.dart';
+import 'squad_page.dart';
+import '../providers/providers.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -38,7 +40,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   static final List<Widget> _pages = <Widget>[
     _GradientPage(child: HomeContent()),
-    _GradientPage(child: _PlaceholderPage(title: 'Squad', backgroundColor: Colors.transparent)),
+    _GradientPage(child: SquadPage()),
     _GradientPage(child: _PlaceholderPage(title: 'Kickoff', backgroundColor: Colors.transparent)),
     _GradientPage(child: _PlaceholderPage(title: 'Stats', backgroundColor: Colors.transparent)),
     _GradientPage(child: MePage()),
@@ -50,28 +52,15 @@ class _HomePageState extends ConsumerState<HomePage> {
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       appBar: _currentIndex == 4 ? null : AppBar(
-        backgroundColor: Colors.black.withValues(alpha: 0.5),
+        backgroundColor: navIndicatorColors[_currentIndex].withValues(alpha: 0.8),
         elevation: 3,
         centerTitle: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
-        title: Stack(
-          alignment: Alignment.center,
-          children: [
-            Opacity(
-              opacity: 0.13, // Subtle visibility
-              child: Image.asset(
-                'assets/images/hamburger_menu_net.png',
-                height: 36,
-                fit: BoxFit.contain,
-              ),
-            ),
-            SvgPicture.asset(
-              'assets/images/turfr_logo.svg',
-              height: 36,
-            ),
-          ],
+        title: SvgPicture.asset(
+          'assets/images/turfr_logo.svg',
+          height: 36,
         ),
       ),
       drawer: _currentIndex == 4 ? null : Drawer(
@@ -129,33 +118,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                       ),
                       const SizedBox(height: 8),
-                      FutureBuilder<PackageInfo>(
-                        future: PackageInfo.fromPlatform(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const SizedBox(height: 12);
-                          }
-                          if (snapshot.hasError || !snapshot.hasData) {
-                            return const Text(
-                              'Version unavailable',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                          }
-                          return Text(
-                            'v.${snapshot.data!.version}',
-                            style: const TextStyle(
-                              fontFamily: 'IBM3270',
-                              color: Colors.white70,
-                              fontSize: 16, // Increased for visibility
-                              fontWeight: FontWeight.w500,
-                            ),
-                          );
-                        },
-                      ),
+                      // Removed PackageInfo dependency
                     ],
                   ),
                 ],
@@ -171,6 +134,16 @@ class _HomePageState extends ConsumerState<HomePage> {
               leading: const Icon(Icons.info_outline, color: Colors.white, size: 24),
               title: const Text('About', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            ),
+            const Divider(color: Colors.white24, height: 1),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.white, size: 24),
+              title: const Text('Logout', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              onTap: () {
+                // Handle logout
+                ref.read(authProvider.notifier).logout();
+              },
             ),
           ],
         ),
@@ -234,12 +207,12 @@ class _HomePageState extends ConsumerState<HomePage> {
               );
             }),
             indicatorColor: navIndicatorColors[_currentIndex],
-            backgroundColor: Colors.black.withValues(alpha: 0.4), // More translucent
+            backgroundColor: Color(0xFF212121), // Dark grey color from gradient
           ),
         ),
         child: NavigationBar(
           height: 60,
-          backgroundColor: Colors.black.withValues(alpha: 0.4), // More translucent
+          backgroundColor: Color(0xFF212121), // Dark grey color from gradient
           indicatorColor: navIndicatorColors[_currentIndex],
           selectedIndex: _currentIndex,
           onDestinationSelected: (int idx) => setState(() => _currentIndex = idx),
@@ -342,7 +315,7 @@ class _GrainPainter extends CustomPainter {
 /// Gradient overlay page - wraps content with a top-to-bottom gradient fade.
 class _GradientPage extends StatelessWidget {
   final Widget child;
-  const _GradientPage({required this.child, Key? key}) : super(key: key);
+  const _GradientPage({required this.child, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -368,7 +341,7 @@ class _GradientPage extends StatelessWidget {
 class _PlaceholderPage extends StatelessWidget {
   final String title;
   final Color backgroundColor;
-  const _PlaceholderPage({required this.title, this.backgroundColor = Colors.black, Key? key}) : super(key: key);
+  const _PlaceholderPage({required this.title, this.backgroundColor = Colors.black, super.key});
 
   @override
   Widget build(BuildContext context) {

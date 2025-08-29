@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:turfr_app/features/auth/data/user_repository.dart';
@@ -28,4 +29,25 @@ final authStateChangesProvider = StreamProvider.autoDispose<User?>((ref) {
 
 final currentUserProvider = Provider<User?>((ref) {
   return ref.watch(firebaseAuthProvider).currentUser;
+});
+
+// Auth notifier for handling logout
+class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
+  final AuthRepository _authRepository;
+
+  AuthNotifier(this._authRepository) : super(const AsyncValue.loading());
+
+  Future<void> logout() async {
+    try {
+      await _authRepository.signOut();
+    } catch (e) {
+      // Handle error if needed
+      debugPrint('Logout error: $e');
+    }
+  }
+}
+
+final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  return AuthNotifier(authRepository);
 });

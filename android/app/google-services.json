@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "546620801858-089i62e7f2r251fen518b1q4lm0i8aji.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turfr.app",
+            "certificate_hash": "d03a65aee72cc4d0787e6bf50e478f083c038622"
+          }
+        },
+        {
           "client_id": "546620801858-qv5vgpgh7rt4a14ffrfab3915cc9ucju.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
